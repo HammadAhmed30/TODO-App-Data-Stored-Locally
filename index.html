@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO App</title>
+  </head>
+  <body>
+    <h1>TODO App</h1>
+    <form>
+      <input type="text" id="todoInput" placeholder="Enter a new todo" />
+      <button type="button" onclick="addTodo()">Add</button>
+    </form>
+    <ul id="todoList"></ul>
+
+    <script>
+      // Initialize the todo list with any existing todos stored in local storage
+      let todoList = JSON.parse(localStorage.getItem("todos")) || [];
+
+      // Render the initial list of todos
+      renderTodos();
+
+      function addTodo() {
+        const todoInput = document.getElementById("todoInput");
+        const newTodo = { text: todoInput.value, completed: false };
+        todoList.push(newTodo);
+        todoInput.value = "";
+        renderTodos();
+        saveTodos();
+      }
+
+      function deleteTodo(index) {
+        todoList.splice(index, 1);
+        renderTodos();
+        saveTodos();
+      }
+
+      function toggleComplete(index) {
+        todoList[index].completed = !todoList[index].completed;
+        renderTodos();
+        saveTodos();
+      }
+
+      function renderTodos() {
+        const todoListElement = document.getElementById("todoList");
+        todoListElement.innerHTML = "";
+
+        todoList.forEach((todo, index) => {
+          const todoItemElement = document.createElement("li");
+          const todoTextElement = document.createElement("span");
+          todoTextElement.innerText = todo.text;
+          todoTextElement.style.textDecoration = todo.completed
+            ? "line-through"
+            : "none";
+
+          const deleteButton = document.createElement("button");
+          deleteButton.innerText = "Delete";
+          deleteButton.onclick = () => deleteTodo(index);
+
+          const completeButton = document.createElement("button");
+          completeButton.innerText = todo.completed ? "Undo" : "Complete";
+          completeButton.onclick = () => toggleComplete(index);
+
+          todoItemElement.appendChild(todoTextElement);
+          todoItemElement.appendChild(deleteButton);
+          todoItemElement.appendChild(completeButton);
+          todoListElement.appendChild(todoItemElement);
+        });
+      }
+
+      function saveTodos() {
+        localStorage.setItem("todos", JSON.stringify(todoList));
+      }
+    </script>
+  </body>
+</html>
